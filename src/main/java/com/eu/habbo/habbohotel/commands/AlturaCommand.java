@@ -15,7 +15,7 @@ public class AlturaCommand extends Command {
     public boolean handle(GameClient client, String[] params) throws Exception {
         Room room = client.getHabbo().getHabboInfo().getCurrentRoom();
 
-        // 1. Verificação de segurança: O utilizador está num quarto?
+
         if (room == null) {
             return false;
         }
