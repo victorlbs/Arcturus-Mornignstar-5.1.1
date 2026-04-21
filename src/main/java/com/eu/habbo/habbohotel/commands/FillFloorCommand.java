@@ -10,7 +10,6 @@ import com.eu.habbo.messages.outgoing.rooms.items.AddFloorItemComposer;
 public class FillFloorCommand extends Command {
 
     public FillFloorCommand() {
-        // Uso: :piso [largura] [comprimento]
         super("cmd_commands", new String[]{"piso", "fill", "preencher"});
     }
 
@@ -18,6 +17,14 @@ public class FillFloorCommand extends Command {
     public boolean handle(GameClient client, String[] params) throws Exception {
         Room room = client.getHabbo().getHabboInfo().getCurrentRoom();
         if (room == null) return false;
+
+        // --- VALIDAÇÃO DE SEGURANÇA ---
+        // Impede que qualquer um que não seja o dono ou staff com permissão crie mobis em massa
+        if (room.getOwnerId() != client.getHabbo().getHabboInfo().getId() && !client.getHabbo().hasPermission("acc_anyroomowner")) {
+            client.getHabbo().whisper("Apenas o proprietário do quarto pode usar o comando de preenchimento!");
+            return true;
+        }
+        // ------------------------------
 
         if (params.length < 3) {
             client.getHabbo().whisper("Uso: :piso [largura] [comprimento]");
@@ -28,13 +35,13 @@ public class FillFloorCommand extends Command {
             int width = Integer.parseInt(params[1]);
             int length = Integer.parseInt(params[2]);
 
-            // Limite de segurança para não crashar o servidor (máximo 10x10 = 100 mobis)
+            // Limite de segurança (máximo 100 mobis)
             if (width * length > 100) {
                 client.getHabbo().whisper("Área muito grande! O limite é de 100 mobis por vez.");
                 return true;
             }
 
-            // Pega o mobi que você está pisando para usar como modelo
+            // Pega o mobi que você está pisando
             HabboItem modelItem = room.getTopItemAt(
                     client.getHabbo().getRoomUnit().getX(),
                     client.getHabbo().getRoomUnit().getY()
@@ -48,10 +55,8 @@ public class FillFloorCommand extends Command {
             short startX = client.getHabbo().getRoomUnit().getX();
             short startY = client.getHabbo().getRoomUnit().getY();
 
-            // Loop Duplo: X e Y
             for (int x = 0; x < width; x++) {
                 for (int y = 0; y < length; y++) {
-                    // Pula o primeiro quadrado porque você já está pisando no original
                     if (x == 0 && y == 0) continue;
 
                     short targetX = (short) (startX + x);
@@ -59,10 +64,10 @@ public class FillFloorCommand extends Command {
 
                     RoomTile tile = room.getLayout().getTile(targetX, targetY);
 
-                    // Verifica se o quadrado existe no quarto
                     if (tile != null) {
+                        // Cria o item associando ao ID do dono do quarto para evitar problemas de inventário
                         HabboItem newItem = Emulator.getGameEnvironment().getItemManager().createItem(
-                                client.getHabbo().getHabboInfo().getId(),
+                                room.getOwnerId(), // Associar ao dono do quarto
                                 modelItem.getBaseItem(),
                                 0, 0, ""
                         );
@@ -76,13 +81,13 @@ public class FillFloorCommand extends Command {
 
                             room.addHabboItem(newItem);
                             newItem.needsUpdate(true);
-                            room.sendComposer(new AddFloorItemComposer(newItem, client.getHabbo().getHabboInfo().getUsername()).compose());
+                            room.sendComposer(new AddFloorItemComposer(newItem, room.getOwnerName()).compose());
                         }
                     }
                 }
             }
 
-            client.getHabbo().whisper("Área preenchida com sucesso!");
+            client.getHabbo().whisper("Área de " + (width * length) + " blocos preenchida com sucesso!");
 
         } catch (NumberFormatException e) {
             client.getHabbo().whisper("Insira números válidos para largura e comprimento.");

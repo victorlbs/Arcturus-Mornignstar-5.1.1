@@ -1,52 +1,62 @@
 package com.eu.habbo.habbohotel.commands;
 
 import com.eu.habbo.habbohotel.gameclients.GameClient;
+import com.eu.habbo.habbohotel.rooms.Room;
 import com.eu.habbo.habbohotel.rooms.RoomUnit;
-import com.eu.habbo.habbohotel.rooms.RoomUnitStatus;
 import com.eu.habbo.messages.outgoing.rooms.users.RoomUserStatusComposer;
 
 public class AlturaCommand extends Command {
 
     public AlturaCommand() {
-        // Define o nome do comando na DB e os aliases (atalhos)
         super("cmd_commands", new String[]{"altura", "height", "z"});
     }
 
     @Override
     public boolean handle(GameClient client, String[] params) throws Exception {
+        Room room = client.getHabbo().getHabboInfo().getCurrentRoom();
+
         // 1. Verificação de segurança: O utilizador está num quarto?
-        if (client.getHabbo().getHabboInfo().getCurrentRoom() == null) {
+        if (room == null) {
             return false;
         }
 
+        // --- VALIDAÇÃO DE PROPRIETÁRIO ---
+        // Apenas o dono do quarto ou staffs podem mudar a própria altura
+        if (room.getOwnerId() != client.getHabbo().getHabboInfo().getId() && !client.getHabbo().hasPermission("acc_anyroomowner")) {
+            client.getHabbo().whisper("Você precisa ser o proprietário do quarto para ajustar sua altura!");
+            return true;
+        }
+        // ---------------------------------
+
         RoomUnit roomUnit = client.getHabbo().getRoomUnit();
 
-        // 2. Se o utilizador digitar apenas :altura, resetamos ou mostramos ajuda
+        // 2. Ajuda técnica
         if (params.length < 2) {
-            client.getHabbo().whisper("Uso: :altura [valor] (Ex: :altura 1.5 ou :altura 0.1)");
+            client.getHabbo().whisper("Uso: :altura [valor] (Ex: :altura 1.5)");
             return true;
         }
 
         try {
-            // 3. Captura o valor digitado
-            // Substituímos vírgula por ponto para evitar erros de digitação (ex: 0,1 vira 0.1)
+            // 3. Captura e trata o valor (aceita ponto ou vírgula)
             double novaAltura = Double.parseDouble(params[1].replace(",", "."));
 
+            // Limite de segurança opcional: evitar que o boneco suma no teto ou chão
+            if (novaAltura < -10 || novaAltura > 50) {
+                client.getHabbo().whisper("Valor de altura inválido (tente entre -10 e 50).");
+                return true;
+            }
+
             // 4. Aplicar a altura na RoomUnit
-            // Usamos o método setZ que já existe no teu ficheiro RoomUnit.java
             roomUnit.setZ(novaAltura);
 
-            // 5. IMPORTANTE: Atualizar o status visual
-            // Sem isso, o boneco muda a altura no código, mas os outros jogadores não vêem
+            // 5. Atualizar o status visual para todos no quarto
             roomUnit.statusUpdate(true);
-
-            // Força o envio do pacote de status para todos no quarto
-            client.getHabbo().getHabboInfo().getCurrentRoom().sendComposer(new RoomUserStatusComposer(roomUnit).compose());
+            room.sendComposer(new RoomUserStatusComposer(roomUnit).compose());
 
             client.getHabbo().whisper("Altura definida para: " + novaAltura);
 
         } catch (NumberFormatException e) {
-            client.getHabbo().whisper("Por favor, utiliza apenas números (Ex: 0.5)");
+            client.getHabbo().whisper("Por favor, utiliza apenas números (Ex: 0.8)");
         }
 
         return true;

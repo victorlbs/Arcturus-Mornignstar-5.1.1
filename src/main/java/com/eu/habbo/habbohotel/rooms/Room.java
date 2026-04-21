@@ -131,6 +131,7 @@ public class Room implements Comparable<Room>, ISerialize, Runnable {
     public final Object roomUnitLock = new Object();
     public final ConcurrentHashMap<RoomTile, THashSet<HabboItem>> tileCache = new ConcurrentHashMap<>();
     public final List<Integer> userVotes;
+    public boolean isBlocked = false; // Controle do comando :blockroom
     private final ConcurrentHashMap<Integer, Habbo> currentHabbos = new ConcurrentHashMap<>(3);
     private final TIntObjectMap<Habbo> habboQueue = TCollections.synchronizedMap(new TIntObjectHashMap<>(0));
     private final TIntObjectMap<Bot> currentBots = TCollections.synchronizedMap(new TIntObjectHashMap<>(0));

@@ -17,6 +17,14 @@ public class GirarIguaisCommand extends Command {
         Room room = client.getHabbo().getHabboInfo().getCurrentRoom();
         if (room == null) return false;
 
+        // --- VALIDAÇÃO DE SEGURANÇA ---
+        // Verifica se é o dono ou se tem permissão de staff para ignorar a propriedade do quarto
+        if (room.getOwnerId() != client.getHabbo().getHabboInfo().getId() && !client.getHabbo().hasPermission("acc_anyroomowner")) {
+            client.getHabbo().whisper("Apenas o proprietário do quarto pode girar os mobis!");
+            return true;
+        }
+        // ------------------------------
+
         if (params.length < 2) {
             client.getHabbo().whisper("Uso: :giguais [0-7] ou :giguais proximo");
             return true;
@@ -39,7 +47,6 @@ public class GirarIguaisCommand extends Command {
         try {
             // 2. Lógica de Rotação Inteligente
             if (acao.equals("proximo") || acao.equals("next")) {
-                // Soma +2 (90 graus) e usa o módulo % 8 para voltar ao 0 após o 7
                 novaRotacao = (mobiModelo.getRotation() + 2) % 8;
             } else {
                 novaRotacao = Integer.parseInt(acao);
@@ -56,6 +63,7 @@ public class GirarIguaisCommand extends Command {
             int contador = 0;
 
             for (HabboItem item : items) {
+                // Compara se o ID do item base é o mesmo do mobi que você está pisando
                 if (item.getBaseItem().getId() == itemBaseId) {
                     item.setRotation(novaRotacao);
                     item.needsUpdate(true);
@@ -64,10 +72,10 @@ public class GirarIguaisCommand extends Command {
                 }
             }
 
-            client.getHabbo().whisper("Sucesso! " + contador + " mobis girados para a posição " + novaRotacao);
+            client.getHabbo().whisper("Sucesso! " + contador + " mobis do tipo (" + mobiModelo.getBaseItem().getName() + ") girados para a posição " + novaRotacao);
 
         } catch (NumberFormatException e) {
-            client.getHabbo().whisper("Use um número de 0-7 ou o botão de Giro +90°.");
+            client.getHabbo().whisper("Use um número de 0-7 ou 'proximo'.");
         }
 
         return true;

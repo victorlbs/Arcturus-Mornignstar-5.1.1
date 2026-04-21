@@ -9,37 +9,37 @@ import gnu.trove.set.hash.THashSet;
 public class StackAllCommand extends Command {
 
     public StackAllCommand() {
-        // Nome do comando: :stackall
         super("cmd_commands", new String[]{"stackall", "empilhartudo"});
     }
 
     @Override
     public boolean handle(GameClient client, String[] params) throws Exception {
         Room room = client.getHabbo().getHabboInfo().getCurrentRoom();
+
+        // 1. Verifica se o usuário está em um quarto
         if (room == null) return false;
 
-        // 1. Onde vamos empilhar? (Nas coordenadas atuais do utilizador)
+        // 2. Validação: O usuário é o dono do quarto ou tem permissão de staff?
+        // Se quiser que apenas o dono use:
+        if (room.getOwnerId() != client.getHabbo().getHabboInfo().getId()) {
+            client.getHabbo().whisper("Apenas o proprietário do quarto pode usar este comando!");
+            return true;
+        }
+
         short targetX = client.getHabbo().getRoomUnit().getX();
         short targetY = client.getHabbo().getRoomUnit().getY();
-
-        // 2. Pegar todos os itens de chão do quarto
         THashSet<HabboItem> items = room.getFloorItems();
 
         double currentZ = 0.0;
 
         for (HabboItem item : items) {
-            // 3. Atualizar coordenadas X e Y
             item.setX(targetX);
             item.setY(targetY);
-
-            // 4. Definir a altura Z acumulada
             item.setZ(currentZ);
 
-            // 5. Somar a altura deste item para o próximo ficar em cima
-            // Usamos a altura base do mobi
+            // Incrementa a altura baseado no mobi atual
             currentZ += item.getBaseItem().getHeight();
 
-            // 6. Notificar o banco de dados e os utilizadores
             item.needsUpdate(true);
             room.sendComposer(new FloorItemUpdateComposer(item).compose());
         }

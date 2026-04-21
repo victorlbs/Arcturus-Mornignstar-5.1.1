@@ -184,6 +184,7 @@ public class CommandHandler {
         addCommand(new BanCommand());
         addCommand(new BlockAlertCommand());
         addCommand(new BotsCommand());
+        addCommand(new InfoCommand());
         addCommand(new CalendarCommand());
         addCommand(new ChangeNameCommand());
         addCommand(new ChatTypeCommand());
@@ -191,6 +192,7 @@ public class CommandHandler {
         addCommand(new ConnectCameraCommand());
         addCommand(new ControlCommand());
         addCommand(new CoordsCommand());
+        addCommand(new OverrideCommand());
         addCommand(new CreditsCommand());
         addCommand(new DiagonalCommand());
         addCommand(new DisconnectCommand());
