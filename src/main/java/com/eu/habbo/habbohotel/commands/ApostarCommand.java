@@ -57,7 +57,7 @@ public class ApostarCommand extends Command {
 
         // Alerta visual bonitinho
         THashMap<String, String> keys = new THashMap<>();
-        keys.put("title", "Cassino Habbriol");
+        keys.put("title", "Cassino");
         keys.put("message", mensagem);
         habbo.getClient().sendResponse(new BubbleAlertComposer("hotel.event", keys));
 
