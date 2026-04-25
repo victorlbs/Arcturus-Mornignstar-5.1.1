@@ -39,7 +39,7 @@ public class CommandHandler {
     public CommandHandler() {
         long millis = System.currentTimeMillis();
         this.reloadCommands();
-        LOGGER.info("Command Handler -> Loaded! (" + (System.currentTimeMillis() - millis) + " MS)");
+        LOGGER.info("Manipulador de comandos -> Carregado! (" + (System.currentTimeMillis() - millis) + " MS)");
     }
 
     public static void addCommand(Command command) {
@@ -179,7 +179,7 @@ public class CommandHandler {
         addCommand(new TermosCommand());
         addCommand(new AlertCommand());
         addCommand(new AllowTradingCommand());
-        //addCommand(new ArcturusCommand());
+        addCommand(new ApostarCommand());
         addCommand(new BadgeCommand());
         addCommand(new BanCommand());
         addCommand(new BlockAlertCommand());

@@ -26,7 +26,7 @@ public class BadgeImager {
     public BadgeImager() {
         if (Emulator.getConfig().getBoolean("imager.internal.enabled")) {
             if (this.reload()) {
-                LOGGER.info("Badge Imager -> Loaded!");
+                LOGGER.info("Emblema Imager -> Carregado!");
             } else {
                 LOGGER.warn("Badge Imager -> Disabled! Please check your configuration!");
             }

@@ -104,7 +104,7 @@ public class ConfigurationManager {
         }
 
         this.isLoading = false;
-        LOGGER.info("Configuration Manager -> Loaded!");
+        LOGGER.info("Gerenciador de configurações -> Carregado!");
 
         if (Emulator.getPluginManager() != null) {
             Emulator.getPluginManager().fireEvent(new EmulatorConfigUpdatedEvent());
@@ -127,7 +127,7 @@ public class ConfigurationManager {
             LOGGER.error("Caught SQL exception", e);
         }
 
-        LOGGER.info("Configuration -> loaded! (" + (System.currentTimeMillis() - millis) + " MS)");
+        LOGGER.info("Configurações -> Carregado! (" + (System.currentTimeMillis() - millis) + " MS)");
     }
 
     public void saveToDatabase() {

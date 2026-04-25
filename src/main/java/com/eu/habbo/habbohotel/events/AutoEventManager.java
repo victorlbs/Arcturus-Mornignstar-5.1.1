@@ -1,4 +1,4 @@
-package com.eu.habbo.habbohotel.events; // Sugestão de pacote
+package com.eu.habbo.habbohotel.events;
 
 import com.eu.habbo.Emulator;
 import com.eu.habbo.habbohotel.rooms.Room;
@@ -8,51 +8,69 @@ import com.eu.habbo.messages.ServerMessage;
 import com.eu.habbo.messages.outgoing.generic.alerts.BubbleAlertComposer;
 import com.eu.habbo.messages.outgoing.rooms.RoomSettingsUpdatedComposer;
 import gnu.trove.map.hash.THashMap;
+import gnu.trove.list.array.TIntArrayList;
 
-import java.util.Map;
+import java.sql.Connection;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Random;
 
-public class
-
-
-AutoEventManager {
+public class AutoEventManager {
     private static final Random random = new Random();
-    private static final int[] VALID_ROOM_IDS = {202, 165, 194, 192, 193, 195, 196, 138, 129, 128, 126, 130, 151, 152, 158, 159, 160};
-
     public static boolean isEventActive = false;
 
-    // Método que inicia o ciclo infinito
     public static void init() {
-        // Agenda para rodar a cada 5 minutos (300 segundos)
-        Emulator.getThreading().run(AutoEventManager::executeCycle, 500 * 1000);
+        Emulator.getLogging().logStart("[AutoEventManager] Sistema iniciado. Próximo ciclo em 5 minutos.");
+        Emulator.getThreading().run(AutoEventManager::executeCycle, 300 * 1000);
     }
 
     private static void executeCycle() {
         if (!isEventActive) {
             startEvent();
         }
-        // Re-agenda a si mesmo para o próximo ciclo
-        init();
+        // Re-agenda o ciclo para manter o sistema rodando infinitamente
+        Emulator.getThreading().run(AutoEventManager::executeCycle, 300 * 1000);
+    }
+
+    private static TIntArrayList getValidRoomIds() {
+        TIntArrayList ids = new TIntArrayList();
+        try (Connection connection = Emulator.getDatabase().getDataSource().getConnection();
+             Statement statement = connection.createStatement();
+             ResultSet set = statement.executeQuery("SELECT room_id FROM eventos_config")) {
+
+            while (set.next()) {
+                ids.add(set.getInt("room_id"));
+            }
+        } catch (SQLException e) {
+            Emulator.getLogging().logErrorLine("[AutoEventManager] Erro SQL ao carregar quartos: " + e.getMessage());
+        }
+        return ids;
     }
 
     public static void startEvent() {
-        isEventActive = true;
-        int eventRoomId = VALID_ROOM_IDS[random.nextInt(VALID_ROOM_IDS.length)];
+        Emulator.getLogging().logStart("[AutoEventManager] Iniciando tentativa de evento...");
+        TIntArrayList validIds = getValidRoomIds();
 
-        // No Arcturus, usamos o loadRoom para garantir que o quarto carregue mesmo vazio
+        if (validIds.isEmpty()) {
+            Emulator.getLogging().logStart("[AutoEventManager] Abortado: Nenhum quarto encontrado na tabela eventos_config.");
+            return;
+        }
+
+        int eventRoomId = validIds.get(random.nextInt(validIds.size()));
         Room room = Emulator.getGameEnvironment().getRoomManager().loadRoom(eventRoomId);
 
         if (room != null) {
-            // 1. Abre o quarto
+            isEventActive = true;
             room.setState(RoomState.OPEN);
             room.sendComposer(new RoomSettingsUpdatedComposer(room).compose());
 
-            // 2. Notifica os jogadores após 2 segundos
-            Emulator.getThreading().run(() -> notifyPlayers(room), 2000);
+            Emulator.getLogging().logStart("[AutoEventManager] Evento iniciado no quarto: [" + room.getName() + "] (ID: " + room.getId() + ")");
 
-            // 3. Fecha o quarto após 15 segundos (10s após a notificação + 5s margem)
+            Emulator.getThreading().run(() -> notifyPlayers(room), 2000);
             Emulator.getThreading().run(() -> closeRoom(room), 15000);
         } else {
+            Emulator.getLogging().logErrorLine("[AutoEventManager] Erro: Não foi possível carregar o quarto ID " + eventRoomId);
             isEventActive = false;
         }
     }
@@ -68,16 +86,22 @@ AutoEventManager {
 
         ServerMessage msg = new BubbleAlertComposer("hotel.event", codes).compose();
 
+        int count = 0;
         for (Habbo habbo : Emulator.getGameEnvironment().getHabboManager().getOnlineHabbos().values()) {
             if (!habbo.getHabboStats().blockStaffAlerts) {
                 habbo.getClient().sendResponse(msg);
+                count++;
             }
         }
+        Emulator.getLogging().logStart("[AutoEventManager] Alerta enviado para " + count + " jogadores.");
     }
 
     private static void closeRoom(Room room) {
-        room.setState(RoomState.LOCKED);
-        room.sendComposer(new RoomSettingsUpdatedComposer(room).compose());
+        if (room != null) {
+            room.setState(RoomState.LOCKED);
+            room.sendComposer(new RoomSettingsUpdatedComposer(room).compose());
+            Emulator.getLogging().logStart("[AutoEventManager] Quarto [" + room.getName() + "] fechado com sucesso.");
+        }
         isEventActive = false;
     }
 }

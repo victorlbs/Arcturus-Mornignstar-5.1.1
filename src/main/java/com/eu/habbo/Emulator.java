@@ -183,8 +183,8 @@ public final class Emulator {
             Emulator.badgeImager = new BadgeImager();
             AutoEventManager.init();
 
-            LOGGER.info("Arcturus Morningstar has successfully loaded.");
-            LOGGER.info("System launched in: {}ms. Using {} threads!", (System.nanoTime() - startTime) / 1e6, Runtime.getRuntime().availableProcessors() * 2);
+            LOGGER.info("Emulador carregado com sucesso.");
+            LOGGER.info("Sistema iniciado em: {}ms. usando {} threads!", (System.nanoTime() - startTime) / 1e6, Runtime.getRuntime().availableProcessors() * 2);
             LOGGER.info("Memory: {}/{}MB", (runtime.totalMemory() - runtime.freeMemory()) / (1024 * 1024), (runtime.freeMemory()) / (1024 * 1024));
 
             Emulator.debugging = Emulator.getConfig().getBoolean("debug.mode");

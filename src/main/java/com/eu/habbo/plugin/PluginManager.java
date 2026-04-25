@@ -407,7 +407,7 @@ public class PluginManager {
 
         this.loadPlugins();
 
-        LOGGER.info("Plugin Manager -> Loaded! " + this.plugins.size() + " plugins! (" + (System.currentTimeMillis() - millis) + " MS)");
+        LOGGER.info("Gerenciador de plugins -> Carregado! " + this.plugins.size() + " plugins! (" + (System.currentTimeMillis() - millis) + " MS)");
 
         this.registerDefaultEvents();
     }

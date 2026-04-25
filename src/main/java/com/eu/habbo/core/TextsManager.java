@@ -21,7 +21,7 @@ public class TextsManager {
         try {
             this.reload();
 
-            LOGGER.info("Texts Manager -> Loaded! (" + (System.currentTimeMillis() - millis) + " MS)");
+            LOGGER.info("Gerenciador de textos -> Carregado! (" + (System.currentTimeMillis() - millis) + " MS)");
         } catch (Exception e) {
             e.printStackTrace();
         }

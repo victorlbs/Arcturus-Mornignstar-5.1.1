@@ -21,7 +21,7 @@ public class ThreadPooling {
         this.threads = threads;
         this.scheduledPool = new HabboExecutorService(this.threads, new DefaultThreadFactory("HabExec"));
         this.canAdd = true;
-        LOGGER.info("Thread Pool -> Loaded!");
+        LOGGER.info("Conjunto de threads -> Carregado!");
     }
 
     public ScheduledFuture run(Runnable run) {
