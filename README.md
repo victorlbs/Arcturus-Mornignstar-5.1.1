@@ -1,42 +1,38 @@
 # 🌌 Arcturus Morningstar 5.1.1 - Extended Edition
 
 [![Java](https://img.shields.io/badge/Java-17%2B-ED8B00?style=for-the-badge&logo=java&logoColor=white)](https://www.oracle.com/java/)
-[![Netty](https://img.shields.io/badge/Netty-4.1.x-10b981?style=for-the-badge&logo=opsgenie&logoColor=white)](https://netty.io/)
 [![Version](https://img.shields.io/badge/Version-5.1.1-blue?style=for-the-badge)](https://github.com/victorlbs/Arcturus-Mornignstar-5.1.1)
+[![Status](https://img.shields.io/badge/Status-Otimizado-green?style=for-the-badge)]()
 
-O **Arcturus Morningstar 5.1.1 Extended** é uma evolução do emulador original, projetada para oferecer uma experiência superior em estabilidade e recursos. Esta versão foca na modernização da engine Wired e na automação total de eventos, facilitando a gestão de hotéis de médio e grande porte.
-
----
-
-## 🛠️ Modificações e Destaques
-
-Diferente das versões convencionais, este projeto traz melhorias profundas em diversos módulos:
-
-### ⚙️ Engenharia Wired (Recursos Exclusivos)
-* **Sincronização Binária de UI:** Implementação total de pacotes para suporte a Sliders de tempo (Minutos/Segundos) nativos no Nitro.
-* **Comunicação Remota:** Novos Wireds de **Mandar Sinal** e **Recebe Sinal**, permitindo automação sem fios físicos no quarto.
-* **Controle de Jogos:** Efeito de **Ajustar Tempo do Contador** com suporte a modos de aumentar, diminuir ou definir valores fixos em cronômetros.
-
-### 🤖 Automação & Eventos
-* **Eventos Automáticos:** Sistema nativo para execução de atividades sem necessidade de Staff online.
-* **Gestão de Bots:** Melhoria na interação de NPCs com mobis de jogo e comandos Wired.
-* **Sistema de Recompensas:** Entrega automática de moedas e emblemas integrada ao core.
-
-### ⚡ Performance & Segurança
-* **Otimização do Room Cycle:** Refatoração do processamento de quartos para suportar maior densidade de mobis e usuários com menor latência.
-* **Persistência JSON:** Salvamento de dados Wired via GSON para maior flexibilidade e compatibilidade futura.
-* **ByteBuf Security:** Tratamento rigoroso na classe `ServerMessage` para prevenir ataques de overflow e pacotes malformados.
+Esta é uma versão estendida e otimizada do **Arcturus Morningstar 5.1.1**, desenvolvida para administradores que procuram um servidor robusto, autónomo e com recursos avançados de Wired.
 
 ---
 
-## 🚀 Como Começar
+## 🚀 Principais Modificações
 
-### Pré-requisitos
-* **JDK 17 ou superior**
-* **MariaDB 10.6+** ou **MySQL 8.0+**
-* **IntelliJ IDEA** (Recomendado) ou Maven CLI
+O foco deste projeto está na autonomia do hotel e na liberdade de criação para os utilizadores através de sistemas avançados:
 
-### Instalação Rápida
-1. **Clone o repositório:**
+### 🤖 Eventos Automáticos (Engine Nativa)
+* **Autonomia Total:** Sistema de eventos que roda 24/7 sem necessidade de supervisão da Staff.
+* **Variedade:** Suporte nativo para jogos automáticos clássicos e customizados.
+* **Recompensas:** Entrega automática de moedas, pontos e emblemas configurável via banco de dados.
+
+### ⚙️ Engine Wired Renovada
+* **Novos Wireds:** Inclusão de efeitos e gatilhos exclusivos para maior interatividade.
+* **Sincronização de UI:** Suporte a Sliders de tempo (Minutos/Segundos) sincronizados diretamente com a interface do cliente (Nitro/Flash).
+* **Persistência JSON:** Implementação de salvamento via GSON, garantindo que configurações complexas não se percam.
+
+### ⚡ Código de Alta Performance
+* **Refatoração do Core:** Melhorias críticas nas classes de processamento de quartos (`Room.java`) para reduzir o consumo de CPU.
+* **Estabilidade de Rede:** Otimização na classe `ServerMessage` para um tráfego de pacotes mais fluido e seguro.
+* **Limpeza de Memória:** Correção de vazamentos de memória (Memory Leaks) presentes em versões anteriores.
+
+---
+
+## 🛠️ Instalação e Build
+
+1. **Requisitos:** Java 17+ e MySQL/MariaDB.
+2. **Setup:** Importe a SQL da pasta `/sql` e configure o `config.ini`.
+3. **Build:**
    ```bash
-   git clone [https://github.com/victorlbs/Arcturus-Mornignstar-5.1.1.git](https://github.com/victorlbs/Arcturus-Mornignstar-5.1.1.git)
+   mvn clean package
