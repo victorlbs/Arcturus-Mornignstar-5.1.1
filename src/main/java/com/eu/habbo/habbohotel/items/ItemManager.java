@@ -159,7 +159,7 @@ public class ItemManager {
         this.interactionsList.add(new ItemInteraction("room_o_matic", InteractionRoomOMatic.class));
         this.interactionsList.add(new ItemInteraction("sticky_pole", InteractionStickyPole.class));
         this.interactionsList.add(new ItemInteraction("random_state", InteractionRandomState.class));
-
+        this.interactionsList.add(new ItemInteraction("antena", InteractionWiredAntenna.class));
         // --- SISTEMAS DE CRACKABLE (QUEBRÁVEIS) ---
         this.interactionsList.add(new ItemInteraction("crackable", InteractionCrackable.class));
         this.interactionsList.add(new ItemInteraction("crackable_master", InteractionCrackableMaster.class));
@@ -232,6 +232,11 @@ public class ItemManager {
         this.interactionsList.add(new ItemInteraction("wf_trg_game_team_win", WiredTriggerTeamWins.class));
         this.interactionsList.add(new ItemInteraction("wf_trg_game_team_lose", WiredTriggerTeamLoses.class));
         // Wired Triggers 2026 / Custom
+        this.interactionsList.add(new ItemInteraction("wf_act_ajustacronometro", WiredTriggerAtCounterTime.class));
+        this.interactionsList.add(new ItemInteraction("wf_trg_recebeosinal", WiredTriggerReceiveSignal.class));
+
+        this.interactionsList.add(new ItemInteraction("wf_trg_triggerstatechanged", WiredTriggerStateChanged.class));
+
         this.interactionsList.add(new ItemInteraction("wf_trg_habbosaidoquarto", WiredTriggerHabboSaiDoQuarto.class));
         this.interactionsList.add(new ItemInteraction("wf_trg_ficaausente", WiredTriggerAus.class));
         this.interactionsList.add(new ItemInteraction("wf_trg_fazcomando", WiredTriggerHabboDizComando.class));
@@ -301,7 +306,8 @@ public class ItemManager {
         this.interactionsList.add(new ItemInteraction("wf_cnd_timescore", WiredConditionTeamScoreValue.class));
         this.interactionsList.add(new ItemInteraction("wf_cnd_habbofazacao", WiredConditionHabboAction.class));
         this.interactionsList.add(new ItemInteraction("wf_cnd_naotemitemnamao", WiredConditionHabboHasNoHandItem.class));
-        this.interactionsList.add(new ItemInteraction("wf_cnd_direcaodohabbo", WiredConditionHabboDirection.class));
+        this.interactionsList.add(new ItemInteraction("wf_cnd_direcaodohabbo", WiredConditionHabboDirectionMatch.class));
+        this.interactionsList.add(new ItemInteraction("wf_cnd_poderealizarmovi", WiredConditionCanMove.class));
 
         // Negativas (NOT)
         this.interactionsList.add(new ItemInteraction("wf_cnd_not_furni_on", WiredConditionNotFurniHaveFurni.class));

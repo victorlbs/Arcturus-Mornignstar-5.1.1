@@ -28,6 +28,7 @@ public enum WiredConditionType {
     ACTOR_HAS_HANDITEM(25),
     CUSTOM(27),
     ACTOR_DOES_ACTION(28),
+    ACTOR_DIRECTION(31),
     ACTOR_HAS_NO_HANDITEM(29),
     ACTOR_HAS_DIRECTION(30);
 

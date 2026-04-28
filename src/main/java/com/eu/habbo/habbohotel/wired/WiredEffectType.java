@@ -32,7 +32,8 @@ public enum WiredEffectType {
     ANIMATION_TIME(99),
     ROLLER_SPEED(81),
     RAISE_FURNI(82),
-    SEND_SIGNAL(83);
+    SEND_SIGNAL(83),
+    SET_COUNTER_TIME(101);
 
     public final int code;
 

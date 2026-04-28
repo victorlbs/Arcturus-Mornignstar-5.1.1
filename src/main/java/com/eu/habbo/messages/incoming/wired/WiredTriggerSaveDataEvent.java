@@ -35,12 +35,15 @@ public class WiredTriggerSaveDataEvent extends MessageHandler {
 
                             if (trigger.saveData(settings)) {
                                 this.client.sendResponse(new WiredSavedComposer());
-
                                 trigger.needsUpdate(true);
-
                                 Emulator.getThreading().run(trigger);
                             } else {
-                                this.client.sendResponse(new UpdateFailedComposer("There was an error while saving that trigger"));
+                                // 1. Enviamos o sussurro avisando sobre a interação da antena
+                                // O prefixo [Wired] ajuda o usuário a identificar a origem da mensagem
+                                this.client.getHabbo().whisper("Atenção: Este Wired só aceita mobis que possuam a interação Antena Wired!", com.eu.habbo.habbohotel.rooms.RoomChatMessageBubbles.WIRED);
+
+                                // 2. Mantemos o alerta na janela do Wired para ela não fechar
+                                this.client.sendResponse(new UpdateFailedComposer("Falha na validação dos mobis selecionados."));
                             }
                         } else {
                             if ((boolean) saveMethod.get().invoke(trigger, this.packet)) {
