@@ -76,8 +76,10 @@ public class AutoEventManager {
     }
 
     private static void notifyPlayers(Room room) {
+        // Mensagem que aparecerá no alerta visual para todo o hotel
         String message = "<br><b>🚀 Um novo evento começou!</b>" +
-                "<br><br>O quarto <b>" + room.getName() + "</b> está aberto por apenas 10 segundos!";
+                "<br><br>O quarto <b>" + room.getName() + "</b> está aberto!" +
+                "<br><br><i>Use :autoevento para ir automaticamente nos próximos!</i>";
 
         THashMap<String, String> codes = new THashMap<>();
         codes.put("ROOMNAME", room.getName());
@@ -86,14 +88,28 @@ public class AutoEventManager {
 
         ServerMessage msg = new BubbleAlertComposer("hotel.event", codes).compose();
 
-        int count = 0;
+        // Percorre todos os jogadores online no hotel
         for (Habbo habbo : Emulator.getGameEnvironment().getHabboManager().getOnlineHabbos().values()) {
+
+            // --- AÇÃO 1: MOSTRAR PARA TODOS ---
+            // Envia o alerta visual para todo mundo que não bloqueou alertas de staff
             if (!habbo.getHabboStats().blockStaffAlerts) {
                 habbo.getClient().sendResponse(msg);
-                count++;
+            }
+
+            // --- AÇÃO 2: IR AUTOMÁTICO (APENAS COM COMANDO) ---
+            // Verifica se este jogador específico ativou o :autoevento
+            if (habbo.getHabboStats().cache.containsKey("auto_evento_enabled")) {
+                Emulator.getThreading().run(() -> {
+                    // Verifica se o jogador ainda está online antes de puxar
+                    if (habbo.getClient() != null && habbo.getHabboInfo().getCurrentRoom() != room) {
+                        habbo.goToRoom(room.getId());
+                    }
+                }, 500); // Meio segundo de delay para não bugar com o alerta
             }
         }
-        Emulator.getLogging().logStart("[AutoEventManager] Alerta enviado para " + count + " jogadores.");
+
+        Emulator.getLogging().logStart("[AutoEventManager] Alerta enviado ao hotel. Usuários vips do comando foram puxados.");
     }
 
     private static void closeRoom(Room room) {

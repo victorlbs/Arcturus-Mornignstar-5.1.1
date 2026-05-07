@@ -182,6 +182,7 @@ public class CommandHandler {
         addCommand(new ApostarCommand());
         addCommand(new HumorCommand());
         addCommand(new BadgeCommand());
+        addCommand(new AutoEventoCommand());
         addCommand(new BanCommand());
         addCommand(new BlockAlertCommand());
         addCommand(new BotsCommand());

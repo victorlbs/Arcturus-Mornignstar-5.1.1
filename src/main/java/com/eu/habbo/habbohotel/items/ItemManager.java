@@ -248,7 +248,10 @@ public class ItemManager {
         this.interactionsList.add(new ItemInteraction("wf_trg_clicaemoutro", WiredTriggerHabboClicaEmOutro.class));
 
         // --- WIRED: EFFECTS (EFEITOS) ---
-        this.interactionsList.add(new ItemInteraction("wf_act_toggle_state", WiredEffectToggleFurni.class));
+       this.interactionsList.add(new ItemInteraction("wf_act_toggle_state", WiredEffectToggleFurni.class));
+        this.interactionsList.add(new ItemInteraction("wf_act_efmandasinal", WiredEffectSendSignal.class));
+        this.interactionsList.add(new ItemInteraction("wf_act_controlacronometro", WiredEffectSetCounterTime.class));
+
         this.interactionsList.add(new ItemInteraction("wf_act_reset_timers", WiredEffectResetTimers.class));
         this.interactionsList.add(new ItemInteraction("wf_act_match_to_sshot", WiredEffectMatchFurni.class));
         this.interactionsList.add(new ItemInteraction("wf_act_move_rotate", WiredEffectMoveRotateFurni.class));
