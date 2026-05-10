@@ -3060,6 +3060,68 @@ public class Room implements Comparable<Room>, ISerialize, Runnable {
     public void habboEntered(Habbo habbo) {
         habbo.getRoomUnit().animateWalk = false;
 
+        // --- SISTEMA DE BOAS-VINDAS: FRANK REAL BOT ---
+        int timestampAgora = Emulator.getIntUnixTimestamp();
+        int timestampCriacao = habbo.getHabboInfo().getAccountCreated();
+
+// Se o usuário tem menos de 3 minutos de conta
+        if ((timestampAgora - timestampCriacao) < 180) {
+            Emulator.getThreading().run(() -> {
+                try {
+                    Thread.sleep(3000); // Espera o quarto carregar
+
+                    // 1. Criar o Bot usando o seu construtor:
+                    // Bot(id, name, motto, figure, gender, ownerId, ownerName)
+                    com.eu.habbo.habbohotel.bots.Bot frank = new com.eu.habbo.habbohotel.bots.Bot(
+                            -1, // ID temporário
+                            "Frank",
+                            "Mordomo do Hotel",
+                            "ch-3022-73-73.sh-290-1408.lg-285-73.hd-180-10.hr-893-40.cc-3039-73.ha-3291-73.fa-1206-1408",
+                            com.eu.habbo.habbohotel.users.HabboGender.M,
+                            0, "Staff"
+                    );
+
+                    // 2. Configurar o Bot no Quarto
+                    frank.setRoom(this);
+                    frank.setRoomUnit(new com.eu.habbo.habbohotel.rooms.RoomUnit());
+                    frank.getRoomUnit().setPathFinderRoom(this);
+
+                    // Define o local de nascimento (porta do quarto)
+                    frank.getRoomUnit().setLocation(this.getLayout().getDoorTile());
+                    frank.getRoomUnit().setRotation(com.eu.habbo.habbohotel.rooms.RoomUserRotation.fromValue(this.getLayout().getDoorDirection()));
+                    frank.getRoomUnit().setInRoom(true);
+
+                    // 3. Adicionar o Bot à lista de bots do quarto para que o emulador o processe
+                    this.addBot(frank);
+
+                    // Envia o pacote para os usuários verem o Frank no quarto
+                    this.sendComposer(new com.eu.habbo.messages.outgoing.rooms.users.RoomUsersComposer(frank).compose());
+
+                    // 4. Sequência de falas usando o SEU MÉTODO talk(message) de Bot.java
+                    // Isso garante que ele use o bubble correto e dispare eventos de plugin
+
+                    frank.talk("Olá " + habbo.getHabboInfo().getUsername() + "! Bem-vindo ao " + Emulator.getConfig().getValue("hotel.name") + "!");
+
+                    Thread.sleep(4000);
+                    frank.talk("Eu sou o Frank. Estou aqui para te dar as boas-vindas e ajudar no tutorial.");
+
+                    Thread.sleep(4000);
+                    frank.talk("Dê uma olhada no catálogo para decorar seu primeiro quarto!");
+
+                    Thread.sleep(5000);
+                    frank.talk("Divirta-se! Vou indo agora, tchau!");
+
+                    // 5. O Bot sai do quarto
+                    Thread.sleep(2000);
+                    this.removeBot(frank);
+
+                } catch (Exception e) {
+                    Emulator.getLogging().logErrorLine(e);
+                }
+            });
+        }
+        // --- FIM DO SISTEMA FRANK ---
+
         synchronized (this.currentBots) {
             if (habbo.getHabboInfo().getId() != this.getOwnerId())
                 return;
@@ -4860,8 +4922,11 @@ public class Room implements Comparable<Room>, ISerialize, Runnable {
         return units;
     }
 
+
+
     public Collection<RoomUnit> getRoomUnitsAt(RoomTile tile) {
         THashSet<RoomUnit> roomUnits = getRoomUnits();
         return roomUnits.stream().filter(unit -> unit.getCurrentLocation() == tile).collect(Collectors.toSet());
     }
+
 }
