@@ -36,7 +36,7 @@ public class RoomUserWalkEvent extends MessageHandler {
             RoomTile clickedTile = currentRoom.getLayout().getTile((short) x, (short) y);
 
             if (clickedTile != null) {
-                System.out.println("[DEBUG] O emulador leu o clique! Ativando Wired no X:" + x + " Y:" + y);
+                // System.out.println("[DEBUG] O emulador leu o clique! Ativando Wired no X:" + x + " Y:" + y);
 
                 com.eu.habbo.habbohotel.wired.WiredHandler.handle(
                         com.eu.habbo.habbohotel.wired.WiredTriggerType.USER_CLICKS_TILE,
@@ -47,6 +47,59 @@ public class RoomUserWalkEvent extends MessageHandler {
             }
             // ==========================================
             // --- FIM DO NOSSO GATILHO WIRED ---
+            // ==========================================
+
+            // ==========================================
+            // --- INÍCIO DA LÓGICA DO COMANDO :TILE ---
+            // ==========================================
+            String tileMode = (String) this.client.getHabbo().getHabboStats().cache.get("tile_mode");
+
+            if (tileMode != null && !tileMode.isEmpty() && clickedTile != null) {
+                THashSet<HabboItem> itemsOnTile = currentRoom.getItemsAt(clickedTile);
+
+                if (itemsOnTile.isEmpty() && !tileMode.equals("move_place")) {
+                    this.client.getHabbo().whisper("Não há mobis neste quadrado.");
+                    return; // Interrompe para o usuário não andar
+                }
+
+                switch (tileMode) {
+                    case "pick":
+                        for (HabboItem item : itemsOnTile) {
+                            currentRoom.pickUpItem(item, this.client.getHabbo());
+                        }
+                        this.client.getHabbo().whisper("Todos os mobis do quadrado foram recolhidos.");
+                        break;
+
+                    case "move":
+                        // Salva os mobis atuais no cache e altera o modo para o clique de destino
+                        this.client.getHabbo().getHabboStats().cache.put("tile_move_items", itemsOnTile);
+                        this.client.getHabbo().getHabboStats().cache.put("tile_mode", "move_place");
+                        this.client.getHabbo().whisper("Mobis selecionados. Clique no novo local para movê-los.");
+                        break;
+
+                    case "move_place":
+                        THashSet<HabboItem> itemsToMove = (THashSet<HabboItem>) this.client.getHabbo().getHabboStats().cache.get("tile_move_items");
+
+                        if (itemsToMove != null && !itemsToMove.isEmpty()) {
+                            for (HabboItem item : itemsToMove) {
+                                // Realiza a movimentação do mobi no Arcturus
+                                currentRoom.moveFurniTo(item, clickedTile, item.getRotation(), this.client.getHabbo());
+                            }
+                            this.client.getHabbo().whisper("Mobis movidos com sucesso.");
+                        }
+
+                        // Reseta o cache voltando para a seleção inicial ou limpando tudo
+                        this.client.getHabbo().getHabboStats().cache.put("tile_mode", "move");
+                        this.client.getHabbo().getHabboStats().cache.remove("tile_move_items");
+                        break;
+                }
+
+                // O RETURN é crucial aqui. Ele impede o código abaixo de rodar,
+                // logo, o Habbo não tenta andar até o piso clicado enquanto usa a ferramenta.
+                return;
+            }
+            // ==========================================
+            // --- FIM DA LÓGICA DO COMANDO :TILE ---
             // ==========================================
 
             // Get Habbo object

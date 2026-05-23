@@ -24,6 +24,14 @@ public class EnableCommand extends Command {
             } catch (Exception e) {
                 return false;
             }
+
+            // --- BLOQUEIO DOS IDS 23, 24, 25, 26 ---
+            if (effectId == 23 || effectId == 24 || effectId == 25 || effectId == 26) {
+                gameClient.getHabbo().whisper(Emulator.getTexts().getValue("commands.error.cmd_enable.not_allowed"), RoomChatMessageBubbles.ALERT);
+                return true;
+            }
+            // ----------------------------------------
+
             Habbo target = gameClient.getHabbo();
             if (params.length == 3) {
                 target = gameClient.getHabbo().getHabboInfo().getCurrentRoom().getHabbo(params[2]);

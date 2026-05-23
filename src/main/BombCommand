@@ -1,0 +1,64 @@
+package com.eu.habbo.funcommands;
+
+import com.eu.habbo.Emulator;
+import com.eu.habbo.habbohotel.commands.Command;
+import com.eu.habbo.habbohotel.gameclients.GameClient;
+import com.eu.habbo.habbohotel.rooms.RoomUnitStatus;
+import com.eu.habbo.habbohotel.users.Habbo;
+
+public class BombCommand extends Command {
+
+    public BombCommand() {
+        // "cmd_bomb" deve ser adicionado à tabela permissions se quiser restringir
+        super("cmd_bomb", new String[]{"bomb", "bomba"});
+    }
+
+    @Override
+    public boolean handle(GameClient gameClient, String[] params) throws Exception {
+        final Habbo habbo = gameClient.getHabbo();
+
+        // 1. O utilizador avisa o quarto
+        habbo.getRoomUser().say("BOMBA EM 3 SEGUNDOS! FUJAM!");
+
+        // 2. Agendar a explosão para daqui a 3 segundos (Usa o Threading nativo do seu GameClient/Emulator)
+        Emulator.getThreading().run(() -> {
+            if (habbo.getHabboInfo().getCurrentRoom() == null) return;
+
+            // Efeito visual de explosão no autor (ID 108)
+            habbo.getRoomUser().setEffectId(108);
+
+            // 3. Percorrer todos os utilizadores no quarto
+            for (Habbo target : habbo.getHabboInfo().getCurrentRoom().getHabbos()) {
+                if (target == habbo) continue;
+
+                // Calcular distância entre o autor e os outros
+                double distance = Math.sqrt(Math.pow(habbo.getRoomUser().getX() - target.getRoomUser().getX(), 2) +
+                                           Math.pow(habbo.getRoomUser().getY() - target.getRoomUser().getY(), 2));
+
+                // Se estiverem num raio de 3 quadrados
+                if (distance <= 3.0) {
+                    // Aplica efeito de tontura (31) e faz o boneco "cair" (LAY)
+                    target.getRoomUser().setEffectId(31);
+                    target.getRoomUser().setStatus(RoomUnitStatus.LAY, "1.0");
+                    target.getRoomUser().needsUpdate(true);
+                    target.whisper("BOOM! Foste atingido pela explosão de " + habbo.getHabboInfo().getUsername() + "!");
+
+                    // 4. Limpar o estado após 5 segundos para eles poderem levantar-se
+                    Emulator.getThreading().run(() -> {
+                        if (target.getRoomUser() != null) {
+                            target.getRoomUser().setEffectId(0);
+                            target.getRoomUser().removeStatus(RoomUnitStatus.LAY);
+                            target.getRoomUser().needsUpdate(true);
+                        }
+                    }, 5000);
+                }
+            }
+
+            // Remove o efeito de explosão do autor após 1 segundo
+            Emulator.getThreading().run(() -> habbo.getRoomUser().setEffectId(0), 1000);
+
+        }, 3000);
+
+        return true;
+    }
+}

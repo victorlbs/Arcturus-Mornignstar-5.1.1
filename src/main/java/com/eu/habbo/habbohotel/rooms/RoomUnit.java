@@ -1,6 +1,8 @@
 package com.eu.habbo.habbohotel.rooms;
 
 import com.eu.habbo.Emulator;
+import com.eu.habbo.habbohotel.achievements.Achievement;
+import com.eu.habbo.habbohotel.achievements.AchievementManager;
 import com.eu.habbo.habbohotel.bots.Bot;
 import com.eu.habbo.habbohotel.items.Item;
 import com.eu.habbo.habbohotel.items.interactions.*;
@@ -237,6 +239,13 @@ public class RoomUnit {
 
                     if (e.isCancelled())
                         return true;
+
+
+                }
+
+                Achievement legDay = Emulator.getGameEnvironment().getAchievementManager().getAchievement("LegDay");
+                if (legDay != null) {
+                    AchievementManager.progressAchievement(habbo.getHabboInfo().getId(), legDay);
                 }
             }
 
@@ -276,6 +285,8 @@ public class RoomUnit {
             }
 
             double zHeight = 0.0D;
+
+
 
             /*if (((habbo != null && habbo.getHabboInfo().getRiding() != null) || isRiding) && next.equals(this.goalLocation) && (next.state == RoomTileState.SIT || next.state == RoomTileState.LAY)) {
                 this.status.remove(RoomUnitStatus.MOVE);

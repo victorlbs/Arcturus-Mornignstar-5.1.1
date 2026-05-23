@@ -67,7 +67,13 @@ public class AutoEventManager {
 
             Emulator.getLogging().logStart("[AutoEventManager] Evento iniciado no quarto: [" + room.getName() + "] (ID: " + room.getId() + ")");
 
+            // Inicia as notificações para o hotel
             Emulator.getThreading().run(() -> notifyPlayers(room), 2000);
+
+            // --- INJEÇÃO DO BOT NO QUARTO ---
+            Emulator.getThreading().run(() -> spawnEventBot(room), 3500);
+
+            // Fecha o quarto após 15 segundos
             Emulator.getThreading().run(() -> closeRoom(room), 15000);
         } else {
             Emulator.getLogging().logErrorLine("[AutoEventManager] Erro: Não foi possível carregar o quarto ID " + eventRoomId);
@@ -119,5 +125,47 @@ public class AutoEventManager {
             Emulator.getLogging().logStart("[AutoEventManager] Quarto [" + room.getName() + "] fechado com sucesso.");
         }
         isEventActive = false;
+    }
+
+    private static void spawnEventBot(Room room) {
+        if (room == null) return;
+
+        try {
+            // Cria a instância do Frank (Mordomo clássico)
+            com.eu.habbo.habbohotel.bots.Bot frank = new com.eu.habbo.habbohotel.bots.Bot(
+                    -1,
+                    "MOD_Frank",
+                    "Organizador de Eventos",
+                    "ch-3022-73-73.sh-290-1408.lg-285-73.hd-180-10.hr-893-40.cc-3039-73.ha-3291-73.fa-1206-1408",
+                    com.eu.habbo.habbohotel.users.HabboGender.M,
+                    0, "Staff"
+            );
+
+            frank.setRoom(room);
+            frank.setRoomUnit(new com.eu.habbo.habbohotel.rooms.RoomUnit());
+            frank.getRoomUnit().setPathFinderRoom(room);
+
+            // Spawn na porta do quarto
+            frank.getRoomUnit().setLocation(room.getLayout().getDoorTile());
+            frank.getRoomUnit().setInRoom(true);
+
+            room.addBot(frank);
+            room.sendComposer(new com.eu.habbo.messages.outgoing.rooms.users.RoomUsersComposer(frank).compose());
+
+            // Sequência de falas do Frank para animar o evento
+            frank.talk("🚀 BOA SORTE A TODOS! O EVENTO COMEÇOU!");
+
+            Emulator.getThreading().run(() -> {
+                frank.talk("Corram! O quarto fechará em instantes!");
+            }, 4000);
+
+            // Remove o bot após 12 segundos (um pouco antes do quarto fechar totalmente)
+            Emulator.getThreading().run(() -> {
+                room.removeBot(frank);
+            }, 12000);
+
+        } catch (Exception e) {
+            Emulator.getLogging().logErrorLine("[AutoEventManager] Erro ao spawnar bot: " + e.getMessage());
+        }
     }
 }

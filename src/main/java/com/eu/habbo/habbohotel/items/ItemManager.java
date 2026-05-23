@@ -118,6 +118,8 @@ public class ItemManager {
         // --- MÓVEIS BASE E FUNCIONALIDADES GERAIS ---
         this.interactionsList.add(new ItemInteraction("default", InteractionDefault.class));
         this.interactionsList.add(new ItemInteraction("gate", InteractionGate.class));
+        this.interactionsList.add(new ItemInteraction("cavalo", InteractionHorseJump.class));
+        this.interactionsList.add(new ItemInteraction("skate", InteractionSkateBoardJump.class));
         this.interactionsList.add(new ItemInteraction("onewaygate", InteractionOneWayGate.class));
         this.interactionsList.add(new ItemInteraction("guild_furni", InteractionGuildFurni.class));
         this.interactionsList.add(new ItemInteraction("guild_gate", InteractionGuildGate.class));
@@ -234,6 +236,8 @@ public class ItemManager {
         // Wired Triggers 2026 / Custom
         this.interactionsList.add(new ItemInteraction("wf_act_ajustacronometro", WiredTriggerAtCounterTime.class));
         this.interactionsList.add(new ItemInteraction("wf_trg_recebeosinal", WiredTriggerReceiveSignal.class));
+        this.interactionsList.add(new ItemInteraction("wf_mataevento", WiredEffectMataEvento.class));
+        this.interactionsList.add(new ItemInteraction("wf_emblemanivel", WiredEffectGiveBadge.class));
 
         this.interactionsList.add(new ItemInteraction("wf_trg_triggerstatechanged", WiredTriggerStateChanged.class));
 

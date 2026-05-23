@@ -180,6 +180,9 @@ public class CommandHandler {
         addCommand(new AlertCommand());
         addCommand(new AllowTradingCommand());
         addCommand(new ApostarCommand());
+        addCommand(new FakePlayersCommand());
+        addCommand(new TileCommand());
+        addCommand(new SpawnBotsCommand());
         addCommand(new HumorCommand());
         addCommand(new BadgeCommand());
         addCommand(new AutoEventoCommand());
